@@ -50,8 +50,8 @@ void Otto9Humanoid::initHUMANOID(int YL, int YR, int RL, int RR,int LA, int RA, 
 
 
 //////////////////////////////////////////////////////////
-void Otto9Humanoid::initMATRIX(int DIN, int CS, int CLK, int rotate){
-ledmatrix.init( DIN, CS, CLK, 1, rotate);   // set up Matrix display
+void Otto9Humanoid::initMATRIX(int DIN, int CS, int CLK, int rotate, String matrix_size){
+ledmatrix.init( DIN, CS, CLK, 1, rotate, matrix_size);   // set up Matrix display
 }
 void Otto9Humanoid::matrixIntensity(int intensity){
 ledmatrix.setIntensity(intensity);
@@ -675,13 +675,48 @@ ledmatrix.writeFull(PROGMEM_getAnything (&Gesturetable[aniMouth][index]));
 //EXAMPLE putMouth(smile);
 void Otto9Humanoid::putMouth(unsigned long int mouth, bool predefined){
   if (predefined){
-// Here a direct entry into the Progmem Mouthttable is used!!
-
-ledmatrix.writeFull(PROGMEM_getAnything(&Mouthtable[mouth]));
+    // Here a direct entry into the Progmem Mouthttable is used!!
+    ledmatrix.writeFull(PROGMEM_getAnything(&Mouthtable[mouth]));
   }
   else{
     ledmatrix.writeFull(mouth);
   }
+}
+
+void Otto9Humanoid::putLedNumber(int number){
+  if (number <= 99){
+    // single digits, left digit is not displayed
+    if (number <= 9){
+      left_digit = 0b00000000000000000000000000000000;
+    }
+    else{
+      // split number and get binary of left digit from table
+      left_digit = PROGMEM_getAnything(&Numbertable[(number / 10 % 10)]);
+    }
+    // split number and get binary of right digit from table
+    right_digit = PROGMEM_getAnything(&Numbertable[(number % 10)]);
+    // combine left and right number
+    binary_rotation2 = (left_digit << 32) | right_digit;
+  }
+  else{
+    // split number and get right, middle and left binaries
+    right_digit = PROGMEM_getAnything(&Numbertable[10+(number % 10)]);
+    middle_digit = PROGMEM_getAnything(&Numbertable[10+(number / 10 % 10)]);
+    left_digit = PROGMEM_getAnything(&Numbertable[10+(number / 100 % 10)]);
+    // combine right, middle and left 
+    binary_rotation2 = (left_digit << 8) | 0b00000000;
+    binary_rotation2 = (binary_rotation2 << 16) | middle_digit;
+    binary_rotation2 = (binary_rotation2 << 8) | 0b00000000;
+    binary_rotation2 = (binary_rotation2 << 16) | right_digit;
+  }
+  // easier to combine digits in rotation 2, but rotate back to 1 before writing ledmatrix
+  binary_number = 0b0;
+  for (int r=0; r<8; r++){
+    for (int c=0; c<8; c++){
+      binary_number = (binary_number << 1) | (1L & (binary_rotation2 >> (63-((c*8)+(7-r)))));
+    }
+  }
+  ledmatrix.writeFull(binary_number);
 }
 
 void Otto9Humanoid::clearMouth(){

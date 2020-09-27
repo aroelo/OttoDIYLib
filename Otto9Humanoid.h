@@ -12,6 +12,7 @@
 #include "BatReader9.h"
 #include "Otto_Matrix9.h"
 #include "Otto_mouth9.h"
+#include "Otto_lednumbers9.h"
 #include "Otto_sound9.h"
 #include "Otto_gestures9.h"
 #include <TimerFreeTone.h>
@@ -82,7 +83,13 @@ class Otto9Humanoid
     double getBatteryVoltage();
     
     //-- Mouth & Animations
+    unsigned long int right_digit;
+    unsigned long int middle_digit;
+    unsigned long int left_digit;
+    unsigned long long int binary_rotation2;
+    unsigned long long int binary_number;
     void putMouth(unsigned long int mouth, bool predefined = true);
+    void putLedNumber(int number);
     void putAnimationMouth(unsigned long int anim, int index);
     void clearMouth();
 
@@ -93,7 +100,7 @@ class Otto9Humanoid
 
     //-- Gestures
     void playGesture(int gesture);
-    void initMATRIX(int DIN, int CS, int CLK, int rotate);
+    void initMATRIX(int DIN, int CS, int CLK, int rotate, String matrix_size);
     void matrixIntensity(int intensity);
     void initBatLevel(int batteryPIN);
     void setLed(byte X, byte Y, byte value);

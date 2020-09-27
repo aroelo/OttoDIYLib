@@ -17,13 +17,14 @@ Otto_Matrix::Otto_Matrix()
 	//num = _num;
 }
 
-void Otto_Matrix::init(byte _data, byte _load, byte _clock, byte _num, int _rotation)
+void Otto_Matrix::init(byte _data, byte _load, byte _clock, byte _num, int _rotation, String _matrix_size)
 {
-   data = _data;
+  data = _data;
   load = _load;
   clock = _clock;
   num = _num;
   rotation = _rotation;
+  matrix_size = _matrix_size;
   if ((rotation > 4) || (rotation == 0)) rotation = 1; // we have to have number between 1 and 4
   for (int i=0; i<8; i++)
     buffer[i] = 0;
@@ -138,38 +139,48 @@ void Otto_Matrix::setDot(byte col, byte row, byte value)
 	digitalWrite(load, HIGH);
 }
 
+
 // routine for OTTO and ZOWI, for the 6 x 5 matrix
-void Otto_Matrix::writeFull(unsigned long value) {
-  if (rotation == 1) {
-	for (int r=0; r<5;r++){
-            for (int c=0; c<6; c++){
-                setDot(6-c,7-r,(1L & (value >> r*6+c)));
-                }
-            }
+void Otto_Matrix::writeFull(unsigned long long value) {
+  // for 8x8 matrix
+  if (matrix_size == "8x8"){
+    if (rotation == 1){
+      for (int r=0; r<8; r++){
+        for (int c=0; c<8; c++){
+          setDot(7-c, 7-r,(1L & (value >> r*8+c)));
+        }
+      }
+    }
   }
-if (rotation == 2) {
-  for (int r=0; r<5;r++){
-            for (int c=0; c<6; c++){
-                //setDot(6-c,7-r,(1L & (value >> r*6+c)));
-                setDot(1+c,r,    (1L & (value >> r*6+c)));
-                }
+  else{
+    if (rotation == 1) {
+      for (int r=0; r<5;r++){
+        for (int c=0; c<6; c++){
+            setDot(6-c, 7-r,(1L & (value >> r*6+c)));
             }
-  }
-  if (rotation == 3) {
-  for (int r=0; r<5;r++){
-            for (int c=0; c<6; c++){
-                //setDot(6-c,7-r,(1L & (value >> r*6+c)));
-                setDot(r,6-c,    (1L & (value >> r*6+c)));
-                }
+        }
+    }
+    if (rotation == 2) {
+      for (int r=0; r<5;r++){
+        for (int c=0; c<6; c++){
+            setDot(1+c, r, (1L & (value >> r*6+c)));
             }
-  }
-  if (rotation == 4) {
-  for (int r=0; r<5;r++){
-            for (int c=0; c<6; c++){
-                //setDot(6-c,7-r,(1L & (value >> r*6+c)));
-                setDot(7-r,1+c, (1L & (value >> r*6+c)));  
-                }
-            }
+        }
+      }
+    if (rotation == 3) {
+    for (int r=0; r<5;r++){
+      for (int c=0; c<6; c++){
+          setDot(r, 6-c, (1L & (value >> r*6+c)));
+          }
+      }
+    }
+    if (rotation == 4) {
+    for (int r=0; r<5;r++){
+      for (int c=0; c<6; c++){
+          setDot(7-r,1+c, (1L & (value >> r*6+c)));  
+          }
+      }
+    }
   }
 }
 

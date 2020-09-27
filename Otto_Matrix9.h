@@ -38,18 +38,19 @@ class Otto_Matrix
     int  rotation;
     void reload();
 	  char rotation2;
+    String matrix_size;
   
   public:
     Otto_Matrix();
     
-    void init(byte data, byte load, byte clock, byte num, int rotation);
+    void init(byte data, byte load, byte clock, byte num, int rotation, String matrix_size = "6x5");
     void clearMatrix();
     void setCommand(byte command, byte value);
     void setIntensity(byte intensity);
     void setColumn(byte col, byte value);
     void setColumnAll(byte col, byte value);
     void setDot(byte col, byte row, byte value);
-    void writeFull(unsigned long value);
+    void writeFull(unsigned long long value);
     void sendChar ( const byte data, byte pos, byte number, byte scrollspeed);
 };
 
