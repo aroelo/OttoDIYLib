@@ -85,7 +85,7 @@ class Otto9Humanoid
     //-- Mouth & Animations
     unsigned long int right_digit;
     unsigned long int middle_digit;
-    unsigned long int left_digit;
+    unsigned long long int left_digit;
     unsigned long long int binary_rotation2;
     unsigned long long int binary_number;
     void putMouth(unsigned long int mouth, bool predefined = true);
